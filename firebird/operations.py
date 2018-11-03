@@ -12,6 +12,8 @@ from django.utils.encoding import force_bytes, force_text
 
 from .base import Database
 
+from decimal import Decimal
+
 
 class DatabaseOperations(BaseDatabaseOperations):
     compiler_module = "firebird.compiler"
@@ -244,9 +246,10 @@ class DatabaseOperations(BaseDatabaseOperations):
         return value
 
     def convert_decimalfield_value(self, value, expression, connection, context):
-        field = expression.field
-        val = utils.format_number(value, field.max_digits, field.decimal_places)
-        value = utils.typecast_decimal(val)
+        if value is None or value == '':
+            value = None
+        else:
+            value = Decimal(value)
         return value
 
     def convert_ipfield_value(self, value, expression, connection, context):
